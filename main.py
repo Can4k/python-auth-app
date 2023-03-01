@@ -3,6 +3,8 @@
 import sqlite3
 import re
 
+# подключаемся к БД
+
 connection = sqlite3.connect("application.db")
 cursor = connection.cursor()
 
@@ -34,6 +36,8 @@ def checking_email_correctness(email):
     domain = domain_top_domain[0]
     top_domain = domain_top_domain[1]
 
+    # проверяем, что формат adress, domain и top_domain соблюден
+
     if not re.fullmatch(r'[a-zA-Z0-9.]+', address):
         return False
     if not re.fullmatch(r'[a-zA-Z0-9.]+', domain):
@@ -45,6 +49,7 @@ def checking_email_correctness(email):
 
 
 def checking_password_complexity(password, isnew=False):
+    # что делает каждый if видно из возвращаемого значения
     if len(password) < PASSWORD_MIN_LENGTH:
         return f"Ваш {isnew * 'новый'} пароль слишком короткий. Минимальная длина пароля - {PASSWORD_MIN_LENGTH} символов"
     if password.upper() == password:
@@ -149,7 +154,7 @@ def print_green(text):
 def print_white(text):
     print("\033[38m{}".format(text))
 
-
+# функции для вывода ошибок
 def error_in_command():
     print_red("ОШИБКА >>> НЕИЗВЕСТНАЯ КОМАНДА")
 
@@ -171,6 +176,7 @@ print_white("\nCan4k's application is ready to work...")
 print_yellow("Введите /help для получения справки")
 
 while True:
+    # Если нужно закрыть приложение
     if isAppClose:
         break
 
@@ -178,8 +184,10 @@ while True:
     match inp[0]:
         case ("/help"):
             if len(inp) > 1:
+                # неверное количество аргументов
                 error_in_arguments()
             else:
+                # выводим помощь
                 print_yellow(">>> Квадратные скобки писать не надо <<<")
                 if len(LOGIN):
                     print_white("/change_password [пароль] [новый пароль] -> сменить пароль")
@@ -194,11 +202,14 @@ while True:
             isAppClose = True
         case "/auth":
             if len(LOGIN):
+                # команда не может быть выполнена
                 blocked_command()
             else:
                 if len(inp) != 4:
+                    # неверное количество аргументов
                     error_in_arguments()
                 else:
+                    # пытаемся выполнить аунтетификацию
                     verdict = authentication(inp[1], inp[2], inp[3])
                     if verdict is None:
                         print_green("Вы зашли в свой кабинет")
@@ -207,11 +218,14 @@ while True:
                         print_red("ОШИБКА >>> " + verdict)
         case "/register":
             if len(LOGIN):
+                # команда не может быть выполнена
                 blocked_command()
             else:
                 if len(inp) != 5:
+                    # неверное количество аргументов
                     error_in_arguments()
                 else:
+                    # пытаемся выполнить регистрацию
                     verdict = registration(inp[1], inp[2], inp[3], inp[4])
                     if verdict is None:
                         print_green("Успешная регистрация")
@@ -219,11 +233,14 @@ while True:
                         print_red("ОШИБКА >>> " + verdict)
         case "/change_password":
             if not len(LOGIN):
+                # команда не может быть выполнена
                 blocked_command()
             else:
                 if len(inp) != 3:
+                    # неверное количество аргументов
                     error_in_arguments()
                 else:
+                    # пытаемся выполнить изменение пароля
                     verdict = change_password(LOGIN, inp[1], inp[2])
                     if verdict is None:
                         print_green("Пароль успешно изменен")
@@ -231,28 +248,36 @@ while True:
                         print_red("ОШИБКА >>> " + verdict)
         case "/change_name":
             if not len(LOGIN):
+                # команда не может быть выполнена
                 blocked_command()
             else:
                 if len(inp) != 2:
+                    # неверное количество аргументов
                     error_in_arguments()
                 else:
+                    # меняем имя
                     change_name(LOGIN, inp[1])
                     print_green("Имя успешно изменено")
         case "/delete":
             if not len(LOGIN):
+                # команда не может быть выполнена
                 blocked_command()
             else:
                 if len(inp) != 1:
+                    # неверное количество аргументов
                     error_in_arguments()
                 else:
+                    # удаляем аккаунт, выполняем выход
                     delete_login(LOGIN)
                     print_green("Личный кабинет удален")
                     print_yellow("Выход из личного кабинета")
                     LOGIN = ""
         case "/leave":
             if not len(LOGIN):
+                # команда не может быть выполнена
                 blocked_command()
             else:
+                # выполняем выход
                 LOGIN = ""
                 print_yellow("Выход из личного кабинета")
         case _:
