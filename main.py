@@ -138,6 +138,11 @@ def delete_login(login):
     return None
 
 
+def get_users_list():
+    query = "SELECT login FROM USERS"
+    res = cursor.execute(query).fetchall()
+    return res
+
 # функции для работы с консолью
 def print_red(text):
     print("\033[31m{}".format(text))
@@ -168,7 +173,7 @@ def error_in_arguments():
 
 
 # данные пользователя
-LOGIN = ""
+LOGIN = "Can4k"
 isAppClose = False
 
 # Приложение
@@ -194,6 +199,7 @@ while True:
                     print_white("/change_name [новое имя] -> сменить имя")
                     print_white("/delete -> удалить личный кабинет")
                     print_white("/leave -> выйти из личного кабинета")
+                    print_white("/users_list -> вывести список пользователей")
                 else:
                     print_white("/register [логин] [пароль] [имя] [email] -> зарегистрироваться в системе")
                     print_white("/auth [логин] [пароль] [повтор пароля] -> войти в личный кабинет")
@@ -280,6 +286,17 @@ while True:
                 # выполняем выход
                 LOGIN = ""
                 print_yellow("Выход из личного кабинета")
+        case "/users_list":
+            if not len(LOGIN):
+                # команда не может быть выполнена
+                blocked_command()
+            else:
+                # выполняем вывод
+                for i in list(get_users_list()):
+                    if i[0] == LOGIN:
+                        print_green(i[0])
+                    else:
+                        print_white(i[0])
         case _:
             error_in_command()
 
